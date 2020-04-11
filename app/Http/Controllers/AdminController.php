@@ -20,4 +20,19 @@ class AdminController extends Controller
         return response()->json($this->admin_service->get_all_doctors($page_no),200);
     }
     
+    public function delete(Request $request ,$role, $doctor_id){
+        return response()->json($this->admin_service->delete($request ,$role, $doctor_id));
+    }
+
+    public function get_doctor_table_size(Request $request){
+        return response()->json(['tableSize'=>$this->admin_service->get_all_doctor_table_count($request)],200);
+    }
+
+    public function add_new_patient(Request $request){
+        return response()->json($this->admin_service->add_new_patient($request),201);
+    }
+
+    public function get_all_patients(Request $request , $page_no){
+        return response()->json($this->admin_service->get_patients($request , $page_no),200);
+    }
 }

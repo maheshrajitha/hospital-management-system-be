@@ -8,14 +8,17 @@ use App\User;
 use App\Services\UserService;
 use App\Exceptions\AppError;
 use App\Exceptions\ExceptionModels;
+use App\Patient;
 
 class AdminService{
 
     private $doctor;
     private $user_service;
-    public function __construct(Doctor $doctor , UserService $user_service) {
+    private $patient;
+    public function __construct(Doctor $doctor , UserService $user_service , Patient $patient) {
         $this->doctor = $doctor;
         $this->user_service = $user_service;
+        $this->patient = $patient;
     }
 
     public function add_new_doctor($request){
@@ -41,6 +44,48 @@ class AdminService{
 
     public function get_all_doctors($page_no){
         $offSet = (5 * $page_no) - 5;
-        return $this->doctor->offset($offSet)->limit(5)->get();
+        return array('doctorList'=>$this->doctor->offset($offSet)->limit(5)->get() , 'pages'=> \floor($this->doctor->count() / 5));
     }
+
+    public function delete($request ,$role, $doctor_id){
+        if($this->user_service->delete_user($request,$doctor_id)){
+            if($role == 2)
+                return $this->doctor->where('id',$doctor_id)->delete();
+            elseif($role == 3)
+                return $this->patient->where('id',$doctor_id)->delete();
+        }
+        return false;
+    }
+
+    public function get_all_doctor_table_count($request){
+        $doctor_table_count = $this->doctor->count();
+        return $doctor_table_count;
+    }
+
+    public function add_new_patient($request){
+        if(!empty($request->input('email')) && !empty($request->input('fullName'))){
+            $patient_id = Uuid::uuid1()->toString();
+            if(!empty($this->user_service->save_user($request , $patient_id))){
+                $this->patient->id = $patient_id;
+                $this->patient->full_name = $request->input('fullName');
+                $this->patient->email = $request->input('email');
+                $this->patient->dob = $request->input('dob');
+                $this->patient->gender = $request->input('gender');
+                $this->patient->tel_number = $request->input('telNumber');
+                $this->patient->nic = $request->input('nic');
+                $this->patient->address = $request->input('address');
+                $this->patient->save();
+                return $this->patient;
+            }else
+                throw new AppError('This User Exists',409,ExceptionModels::USER_EXISTS);
+        }else
+            throw new AppError('Please Fill Required Fields',400,ExceptionModels::INVALIED_REQUEST);
+    }
+
+    public function get_patients($request , $page_no){
+        $offSet = (5 * $page_no) - 5;
+        return array("patients"=>$this->patient->offset($offSet)->limit(5)->get(),'pages'=>\floor($this->patient->count() / 5));
+    }
+
+
 }

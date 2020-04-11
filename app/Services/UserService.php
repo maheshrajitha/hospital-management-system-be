@@ -28,7 +28,7 @@ class UserService
                 $this->user->save();
                 return $this->user;;
             }else
-                throw new AppError('This Email Already In Use',400,ExceptionModels::USER_EXISTS);
+                throw new AppError('This Email Already In Use',409,ExceptionModels::USER_EXISTS);
         }else
             throw new AppError('Please Fill Email',400,ExceptionModels::INVALIED_REQUEST);
     }
@@ -37,4 +37,7 @@ class UserService
         return User::where('email',$email)->first();
     }
     
+    public function delete_user($request , $user_id){
+        return $this->user->where('id',$user_id)->delete();
+    }
 }
