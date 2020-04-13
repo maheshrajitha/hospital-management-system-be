@@ -1,16 +1,6 @@
 <?php
 use Illuminate\Http\Request;
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It is a breeze. Simply tell Lumen the URIs it should respond to
-| and give it the Closure to call when that URI is requested.
-|
-*/
 
 $router->get('/', function () use ($router) {
     return 'ExampleController@index';
@@ -27,6 +17,8 @@ $router->group(['prefix'=>'admin','middleware'=>'role_user:1'],function() use ($
     $router->get('/doctor-count',['uses'=>'AdminController@get_doctor_table_size']);
     $router->post('/add-new-patient',['uses'=>'AdminController@add_new_patient']);
     $router->get('/get-all-patients/{page_no}',['uses'=>'AdminController@get_all_patients']);
+    $router->post('/add-new-pharmacist',['uses'=>'AdminController@addNewPharmacist']);
+    $router->get('/all-pharmacists/{page_no}',['uses'=>'AdminController@getAllPharmacists']);
 });
 
 $router->group(['prefix'=>'auth'],function() use ($router){

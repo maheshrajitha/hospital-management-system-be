@@ -10,6 +10,7 @@ use Illuminate\Support\ServiceProvider;
 use App\Session;
 use App\Doctor;
 use App\Patient;
+use App\Pharmacist;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
             return new UserService(new User());
         });
         $this->app->singleton(AdminService::class,function(){
-            return new AdminService(new Doctor() , new UserService(new User()),new Patient());
+            return new AdminService(new Doctor() , new UserService(new User()),new Patient() , new Pharmacist());
         });
         $this->app->singleton(AuthService::class,function(){
             return new AuthService(new User());

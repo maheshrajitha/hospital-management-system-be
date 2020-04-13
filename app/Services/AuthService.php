@@ -32,7 +32,7 @@ class AuthService{
                         'iat'=> $iat->getTimestamp()
                     ];
                     //$session_id = Uuid::uuid5(Uuid::uuid1(),'at')->toString();
-                    $user_response = new Response(array('token'=>JWT::encode($payload, env('TOKEN_KEY',null))));
+                    $user_response = new Response(array('token'=>JWT::encode($payload, env('TOKEN_KEY',null)),'user'=> $user_by_email));
                     return $user_response;
                 }else
                     throw new AppError('Password Not Match',401,ExceptionModels::LOGIN_ERROR);

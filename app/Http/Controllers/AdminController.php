@@ -11,8 +11,7 @@ class AdminController extends Controller
     public function __construct(AdminService $admin_service) {
         $this->admin_service = $admin_service;
     }
-    public function add_new_doctor(Request $request)
-    {
+    public function add_new_doctor(Request $request){
         return response()->json($this->admin_service->add_new_doctor($request),201);
     }
 
@@ -34,5 +33,13 @@ class AdminController extends Controller
 
     public function get_all_patients(Request $request , $page_no){
         return response()->json($this->admin_service->get_patients($request , $page_no),200);
+    }
+
+    public function addNewPharmacist(Request $request){
+        return \response()->json($this->admin_service->addNewPharmacist($request),201);
+    }
+
+    public function getAllPharmacists(Request $request , $page_no){
+        return response()->json($this->admin_service->getPharmacists($request , $page_no),200);
     }
 }

@@ -9,16 +9,19 @@ use App\Services\UserService;
 use App\Exceptions\AppError;
 use App\Exceptions\ExceptionModels;
 use App\Patient;
+use App\Pharmacist;
 
 class AdminService{
 
     private $doctor;
     private $user_service;
     private $patient;
-    public function __construct(Doctor $doctor , UserService $user_service , Patient $patient) {
+    private $pharmacist;
+    public function __construct(Doctor $doctor , UserService $user_service , Patient $patient , Pharmacist $pharmacist) {
         $this->doctor = $doctor;
         $this->user_service = $user_service;
         $this->patient = $patient;
+        $this->pharmacist = $pharmacist;
     }
 
     public function add_new_doctor($request){
@@ -53,6 +56,8 @@ class AdminService{
                 return $this->doctor->where('id',$doctor_id)->delete();
             elseif($role == 3)
                 return $this->patient->where('id',$doctor_id)->delete();
+            elseif($role == 4)
+                return $this->pharmacist->where('id',$doctor_id)->delete();
         }
         return false;
     }
@@ -87,5 +92,27 @@ class AdminService{
         return array("patients"=>$this->patient->offset($offSet)->limit(5)->get(),'pages'=>\floor($this->patient->count() / 5));
     }
 
+    public function addNewPharmacist($request){
+        if(!empty($request->input('email')) && !empty($request->input('fullName'))){
+            $pharmacistId = Uuid::uuid1()->toString();
+            if(!empty($this->user_service->save_user($request,$pharmacistId))){
+                $this->pharmacist->id = $pharmacistId;
+                $this->pharmacist->full_name = $request->input('fullName');
+                $this->pharmacist->email = $request->input('email');
+                $this->pharmacist->dob = $request->input('dob');
+                $this->pharmacist->gender = $request->input('gender');
+                $this->pharmacist->tel_number = $request->input('telNumber');
+                $this->pharmacist->address = $request->input('address');
+                $this->pharmacist->save();
+                return $this->pharmacist;
+            }else
+                throw new AppError('This User Exists',409,ExceptionModels::USER_EXISTS);
+        }else
+            throw new AppError('Please Fill Required Fields',400,ExceptionModels::INVALIED_REQUEST);
+    }
 
+    public function getPharmacists($request , $pageNo){
+        $offSet = (5 * $pageNo) - 5;
+        return array("pharmacists"=>$this->pharmacist->offset($offSet)->limit(5)->get(),'pages'=>\floor($this->pharmacist->count() / 5));
+    }
 }
