@@ -19,6 +19,8 @@ $router->group(['prefix'=>'admin','middleware'=>'role_user:1'],function() use ($
     $router->get('/get-all-patients/{page_no}',['uses'=>'AdminController@get_all_patients']);
     $router->post('/add-new-pharmacist',['uses'=>'AdminController@addNewPharmacist']);
     $router->get('/all-pharmacists/{page_no}',['uses'=>'AdminController@getAllPharmacists']);
+    $router->post('/add-new-staff-member',['uses'=>'AdminController@addNewStaffMember']);
+    $router->get('/get-staff-members/{page_no}',['uses'=>'AdminController@getStaffMembers']);
 });
 
 $router->group(['prefix'=>'auth'],function() use ($router){

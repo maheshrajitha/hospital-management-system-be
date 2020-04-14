@@ -10,6 +10,7 @@ use App\Exceptions\AppError;
 use App\Exceptions\ExceptionModels;
 use App\Patient;
 use App\Pharmacist;
+use App\Staff;
 
 class AdminService{
 
@@ -17,11 +18,14 @@ class AdminService{
     private $user_service;
     private $patient;
     private $pharmacist;
-    public function __construct(Doctor $doctor , UserService $user_service , Patient $patient , Pharmacist $pharmacist) {
+    private $staff;
+
+    public function __construct(Doctor $doctor , UserService $user_service , Patient $patient , Pharmacist $pharmacist , Staff $staff) {
         $this->doctor = $doctor;
         $this->user_service = $user_service;
         $this->patient = $patient;
         $this->pharmacist = $pharmacist;
+        $this->staff = $staff;
     }
 
     public function add_new_doctor($request){
@@ -58,6 +62,10 @@ class AdminService{
                 return $this->patient->where('id',$doctor_id)->delete();
             elseif($role == 4)
                 return $this->pharmacist->where('id',$doctor_id)->delete();
+	    elseif($role == 5)
+                return $this->staff->where('id',$doctor_id)->delete();
+	    else
+		return false;
         }
         return false;
     }
@@ -114,5 +122,30 @@ class AdminService{
     public function getPharmacists($request , $pageNo){
         $offSet = (5 * $pageNo) - 5;
         return array("pharmacists"=>$this->pharmacist->offset($offSet)->limit(5)->get(),'pages'=>\floor($this->pharmacist->count() / 5));
+    }
+
+    public function addNewStaffMember($request){
+        if(!empty($request->input('email')) && $request->input('fullName')){
+            $staffMemberId = Uuid::uuid1()->toString();
+            if(!empty($this->user_service->save_user($request , $staffMemberId))){
+                $this->staff->id = $staffMemberId;
+                $this->staff->full_name = $request->input('fullName');
+                $this->staff->email = $request->input('email');
+                $this->staff->dob = $request->input('dob');
+                $this->staff->job_role = $request->input('jobRole');
+                $this->staff->gender = $request->input('gender');
+                $this->staff->tel_number = $request->input('telNumber');
+                $this->staff->address = $request->input('address');
+                $this->staff->save();
+                return $this->staff;
+            }else
+                throw new AppError('This User Exists',409,ExceptionModels::USER_EXISTS);
+        }else
+            throw new AppError('Please Fill Required Fields',400,ExceptionModels::INVALIED_REQUEST);
+    }
+
+    public function getStaffMembers($request , $pageNo){
+        $offSet = (5 * $pageNo) - 5;
+        return array("members"=>$this->staff->offset($offSet)->limit(5)->get(),'pages'=>\floor($this->staff->count() / 5));
     }
 }

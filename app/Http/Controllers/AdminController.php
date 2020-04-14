@@ -42,4 +42,12 @@ class AdminController extends Controller
     public function getAllPharmacists(Request $request , $page_no){
         return response()->json($this->admin_service->getPharmacists($request , $page_no),200);
     }
+
+    public function addNewStaffMember(Request $request){
+        return \response()->json($this->admin_service->addNewStaffMember($request),201);
+    }
+
+    public function getStaffMembers(Request $request , $page_no){
+        return response()->json($this->admin_service->getStaffMembers($request , $page_no),200);
+    }
 }
