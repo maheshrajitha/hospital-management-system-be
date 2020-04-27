@@ -50,4 +50,24 @@ class AdminController extends Controller
     public function getStaffMembers(Request $request , $page_no){
         return response()->json($this->admin_service->getStaffMembers($request , $page_no),200);
     }
+
+    public function update_doctor(Request $request){
+        return \response()->json($this->admin_service->update_doctor($request),200);
+    }
+
+    public function update_patient(Request $request){
+        return \response()->json($this->admin_service->update_patient($request),200);
+    }
+
+    public function update_pharmacist(Request $request){
+        return \response()->json($this->admin_service->update_pharmacist($request),200);
+    }
+
+    public function update_staff_member(Request $request){
+        return \response()->json($this->admin_service->update_staff_member($request),200);
+    }
+
+    public function get_by_role_and_id(Request $request , $role , $id){
+        return \response()->json($this->admin_service->get_by_role_and_id($request,$role,$id),200);
+    }
 }

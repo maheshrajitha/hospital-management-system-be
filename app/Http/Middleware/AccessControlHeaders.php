@@ -17,7 +17,7 @@ class AccessControlHeaders
     {
         $headers = [
             'Access-Control-Allow-Origin'      => 'http://localhost:3000',
-            'Access-Control-Allow-Methods'     => 'POST, GET, OPTIONS, PUT, DELETE',
+            'Access-Control-Allow-Methods'     => 'POST, GET, OPTIONS, PUT, DELETE , PATCH',
             'Access-Control-Allow-Credentials' => 'true',
             'Access-Control-Max-Age'           => '86400',
             'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With'

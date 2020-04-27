@@ -16,6 +16,7 @@ class RoleUser
         if(!empty($request->header('Authorization'))){
             $decoded_token = JWT::decode(\str_replace('Bearer ','',$request->header('Authorization')), env('TOKEN_KEY',null), array('HS256'));
             if($decoded_token->role == $role){
+                $request->request->add(['user_id'=>$decoded_token->user_id]);
                 return $next($request);
             }else
                 throw new AppError('You Have No Access',403,ExceptionModels::UNAUTHORIZED);

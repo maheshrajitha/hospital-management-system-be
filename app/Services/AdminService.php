@@ -49,6 +49,12 @@ class AdminService{
 
     }
 
+    public function update_doctor($request){
+        if(!empty($request->id)){
+            return $this->doctor->where('id',$request->id)->update(['full_name'=>$request->fullName,'tel_number'=>$request->telNumber,'specialities'=>$request->specialities,'reg_number'=>$request->regNumber,'address'=>$request->address]);
+        }else throw new AppError('Id Missing',400,ExceptionModels::INVALIED_REQUEST);
+    }
+
     public function get_all_doctors($page_no){
         $offSet = (5 * $page_no) - 5;
         return array('doctorList'=>$this->doctor->offset($offSet)->limit(5)->get() , 'pages'=> \floor($this->doctor->count() / 5));
@@ -62,10 +68,10 @@ class AdminService{
                 return $this->patient->where('id',$doctor_id)->delete();
             elseif($role == 4)
                 return $this->pharmacist->where('id',$doctor_id)->delete();
-	    elseif($role == 5)
+	        elseif($role == 5)
                 return $this->staff->where('id',$doctor_id)->delete();
-	    else
-		return false;
+            else
+            return false;
         }
         return false;
     }
@@ -95,6 +101,11 @@ class AdminService{
             throw new AppError('Please Fill Required Fields',400,ExceptionModels::INVALIED_REQUEST);
     }
 
+    public function update_patient($request){
+        if(!empty($request->id)) return $this->patient->where('id',$request->id)->update(['full_name'=>$request->fullName,'tel_number'=>$request->telNumber,'nic'=>$request->nic,'address'=>$request->address]);
+        else throw new AppError('Id Missing',400,ExceptionModels::INVALIED_REQUEST);
+    }
+
     public function get_patients($request , $page_no){
         $offSet = (5 * $page_no) - 5;
         return array("patients"=>$this->patient->offset($offSet)->limit(5)->get(),'pages'=>\floor($this->patient->count() / 5));
@@ -117,6 +128,17 @@ class AdminService{
                 throw new AppError('This User Exists',409,ExceptionModels::USER_EXISTS);
         }else
             throw new AppError('Please Fill Required Fields',400,ExceptionModels::INVALIED_REQUEST);
+    }
+    public function update_pharmacist($request){
+        if (!empty($request->id))
+            return $this->pharmacist->where('id',$request->id)->update(
+                [
+                    'full_name'=>$request->fullName,
+                    'tel_number'=>$request->telNumber,
+                    'address'=>$request->address
+                ]
+            );
+        else throw new AppError('Id Missing',400,ExceptionModels::INVALIED_REQUEST);
     }
 
     public function getPharmacists($request , $pageNo){
@@ -144,8 +166,34 @@ class AdminService{
             throw new AppError('Please Fill Required Fields',400,ExceptionModels::INVALIED_REQUEST);
     }
 
+    public function update_staff_member($request){
+        if(!empty($request->id))
+            return $this->staff->where('id',$request->id)->update(
+                [
+                    'full_name'=>$request->fullName,
+                    'job_role'=>$request->jobRole,
+                    'tel_number'=>$request->telNumber,
+                    'address'=>$request->address
+                ]
+            );
+        else throw new AppError('ID Missing',400,ExceptionModels::INVALIED_REQUEST);
+    }
+
     public function getStaffMembers($request , $pageNo){
         $offSet = (5 * $pageNo) - 5;
         return array("members"=>$this->staff->offset($offSet)->limit(5)->get(),'pages'=>\floor($this->staff->count() / 5));
+    }
+
+    public function get_by_role_and_id($request , $role , $id){
+        if($role == 2){
+            return $this->doctor->where('id',$id)->first();
+        }elseif($role == 3)
+            return $this->patient->where('id',$id)->first();
+        elseif($role == 4)
+            return $this->pharmacist->where('id',$id)->first();
+        elseif($role == 5)
+            return $this->staff->where('id',$id)->first();
+        else
+            throw new AppError('User Not Found',404,ExceptionModels::NOT_FOUND);
     }
 }

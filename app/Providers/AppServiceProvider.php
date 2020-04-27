@@ -6,12 +6,14 @@ use App\User;
 use App\Services\UserService;
 use App\Services\AdminService;
 use App\Services\AuthService;
+use App\Services\DoctorServices;
 use Illuminate\Support\ServiceProvider;
 use App\Session;
 use App\Doctor;
 use App\Patient;
 use App\Pharmacist;
 use App\Staff;
+use App\Prescription;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(AuthService::class,function(){
             return new AuthService(new User());
+        });
+        $this->app->singleton(DoctorServices::class,function(){
+            return new DoctorServices(new Prescription() , new User());
         });
     }
 }
