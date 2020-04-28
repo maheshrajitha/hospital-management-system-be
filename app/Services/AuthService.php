@@ -10,6 +10,7 @@ use App\Session;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Cookie;
 use Firebase\JWT\JWT;
+use Illuminate\Hashing\BcryptHasher;
 
 class AuthService{
 
@@ -23,7 +24,8 @@ class AuthService{
         if(!empty($request->input("email")) and !empty($request->input("password"))){
             $user_by_email = $this->user::where('email',$request->input("email"))->first();
             if(!empty($user_by_email)){
-                if(\password_verify($request->input('password'),$user_by_email['password'])){
+                $hasher = new BcryptHasher(['algoName'=>'bcrypt']);
+                if($hasher->check($request->password,$user_by_email['password'])){
                     $iat = new \DateTime();
                     $payload = [
                         'id'=>Uuid::uuid5(Uuid::uuid1(),'at')->toString(),
