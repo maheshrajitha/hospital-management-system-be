@@ -11,6 +11,7 @@ use App\Exceptions\ExceptionModels;
 use App\Patient;
 use App\Pharmacist;
 use App\Staff;
+use App\Prescription;
 
 class AdminService{
 
@@ -19,13 +20,15 @@ class AdminService{
     private $patient;
     private $pharmacist;
     private $staff;
+    private $prescription;
 
-    public function __construct(Doctor $doctor , UserService $user_service , Patient $patient , Pharmacist $pharmacist , Staff $staff) {
+    public function __construct(Doctor $doctor , UserService $user_service , Patient $patient , Pharmacist $pharmacist , Staff $staff , Prescription $prescription) {
         $this->doctor = $doctor;
         $this->user_service = $user_service;
         $this->patient = $patient;
         $this->pharmacist = $pharmacist;
         $this->staff = $staff;
+        $this->prescription = $prescription;
     }
 
     public function add_new_doctor($request){
@@ -64,8 +67,10 @@ class AdminService{
         if($this->user_service->delete_user($request,$doctor_id)){
             if($role == 2)
                 return $this->doctor->where('id',$doctor_id)->delete();
-            elseif($role == 3)
+            elseif($role == 3){
+                $this->prescription->where('patient_id',$doctor_id)->delete();
                 return $this->patient->where('id',$doctor_id)->delete();
+            }
             elseif($role == 4)
                 return $this->pharmacist->where('id',$doctor_id)->delete();
 	        elseif($role == 5)
@@ -83,7 +88,7 @@ class AdminService{
 
     public function add_new_patient($request){
         if(!empty($request->input('email')) && !empty($request->input('fullName'))){
-            $patient_id = Uuid::uuid1()->toString();
+            $patient_id = \substr(\uniqid(),0,12);
             if(!empty($this->user_service->save_user($request , $patient_id))){
                 $this->patient->id = $patient_id;
                 $this->patient->full_name = $request->input('fullName');

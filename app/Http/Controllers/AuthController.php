@@ -15,5 +15,9 @@ class AuthController extends Controller
     {
         return $this->auth_service->login($request);
     }
+
+    public function validate_token(Request $request){
+        return \response()->json($this->auth_service->validate_token($request));
+    }
     
 }

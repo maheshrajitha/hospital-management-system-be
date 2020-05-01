@@ -39,6 +39,15 @@ $router->group(['prefix'=>'doctor','middleware'=>'role_user:2'],function() use (
 
 $router->group(['prefix'=>'auth'],function() use ($router){
     $router->post('/login',["uses"=>'AuthController@login']);
+    $router->post('/validate-token',['uses'=>'AuthController@validate_token']);
 });
 
+$router->group(['prefix'=>'patient','middleware'=>'role_user:3'],function() use ($router){
+    $router->get('/get-my-prescriptions/{page_no}',['uses'=>'PatientController@get_my_prescriptions']);
+});
+
+$router->group(['prefix'=>'pharmacist','middleware'=>'role_user:4'],function() use ($router){
+    $router->post('/get-patient',['uses'=>'PharmacistController@get_patient_by_id']);
+    $router->get('/get-prescription/{patient_id}',['uses'=>'PharmacistController@get_prescriptions']);
+});
 

@@ -43,4 +43,8 @@ class AuthService{
         }else
             throw new AppError('Email Should Not Be Empty',400,ExceptionModels::INVALIED_REQUEST);
     }
+
+    public function validate_token(Request $request){
+        return JWT::decode(\str_replace('Bearer ','',$request->header('Authorization')), env('TOKEN_KEY',null), array('HS256'));
+    }
 }
