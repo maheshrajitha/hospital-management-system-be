@@ -26,7 +26,7 @@ class PrescriptionService{
     }
     public function get_prescriptions_doctor_id($doctor_id){
         //$offSet = (5 * $pageNo) - 5;
-        return $this->prescription->select('full_name','prescription.id','patient.id as patient_id','comment','image_url')->join('patient','prescription.patient_id','patient.id')->where('prescription.doctor_id',$doctor_id)->get();
+        return $this->prescription->select('full_name','prescription.id','patient.id as patient_id','comment','image_url','prescription')->join('patient','prescription.patient_id','patient.id')->where('prescription.doctor_id',$doctor_id)->get();
         //return $this->prescription->where('doctor_id',$request->user_id)->get();
     }
 
@@ -38,6 +38,7 @@ class PrescriptionService{
         $this->prescription->patient_id = $request->input('patientId');
         $this->prescription->doctor_id = $request->user_id;
         $this->prescription->issued_date = \date('Y-m-d');
+        $this->prescription->prescription = $request->prescriptionDetails;
         $this->azure_blob_client->upload_image($request->prescription , $prescription_id);
         $this->prescription->save();
         return $this->prescription;
@@ -49,10 +50,12 @@ class PrescriptionService{
                 $this->azure_blob_client->upload_image($request->input('prescription'),$request->id);
                 return $this->prescription->where('id',$request->id)->update([
                     'comment'=>$request->comment,
+                    'prescription'=>$request->prescriptionDetails
                 ]);
             }else{
                 return $this->prescription->where('id',$request->id)->update([
                     'comment'=>$request->comment,
+                    'prescription'=>$request->prescriptionDetails
                 ]);
             }
         }else
